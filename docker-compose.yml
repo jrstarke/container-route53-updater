@@ -1,0 +1,12 @@
+version: '2'
+services:
+  mock_metadata:
+    build: ./mock-metadata
+    ports:
+      - "80:80"
+  updater:
+    build: .
+    environment:
+      - META_DATA_HOST=mock_metadata
+    depends_on:
+      - mock_metadata
