@@ -1,7 +1,5 @@
 #! /bin/bash
 
-set -e
-
 function clean_up {
 
   # Perform program exit housekeeping
@@ -17,7 +15,7 @@ if [[ -n "$PUBLIC_IP_HOSTED_ZONE" ]] && [[ -n "$PUBLIC_IP_DOMAIN" ]]; then
     public_ip=$(curl -f $META_DATA_HOST/latest/meta-data/public-ipv4)
 
     if [[ -n "$public_ip" ]]; then
-        route53 change-resource-record-sets --hosted-zone-id $PUBLIC_IP_HOSTED_ZONE --change-batch "{
+        aws route53 change-resource-record-sets --hosted-zone-id $PUBLIC_IP_HOSTED_ZONE --change-batch "{
             \"Changes\": [
                 {
                     \"Action\": \"UPSERT\",
@@ -40,7 +38,7 @@ if [[ -n "$LOCAL_IP_HOSTED_ZONE" ]] && [[ -n "$LOCAL_IP_DOMAIN" ]]; then
     local_ip=$(curl -f $META_DATA_HOST/latest/meta-data/local-ipv4)
 
     if [[ -n "$local_ip" ]]; then
-        route53 change-resource-record-sets --hosted-zone-id $LOCAL_IP_HOSTED_ZONE --change-batch "{
+        aws route53 change-resource-record-sets --hosted-zone-id $LOCAL_IP_HOSTED_ZONE --change-batch "{
             \"Changes\": [
                 {
                     \"Action\": \"UPSERT\",
@@ -58,6 +56,8 @@ if [[ -n "$LOCAL_IP_HOSTED_ZONE" ]] && [[ -n "$LOCAL_IP_DOMAIN" ]]; then
         }"
     fi
 fi
+
+set -e
 
 # Wait for the machine to be terminated
 while true; do sleep 86400 & wait; done
